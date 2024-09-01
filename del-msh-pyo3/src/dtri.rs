@@ -15,7 +15,7 @@ pub fn tesselation2d<'a>(
     vtx2xy_in: numpy::PyReadonlyArray2<'a, f32>,
     resolution_edge: f32,
     resolution_face: f32,
-) -> (Bound<'a, PyArray2<usize>>, Bound<'a, PyArray2<f32>>) {
+) -> (Bound<'a, PyArray2<usize>>, Bound<'a, PyArray2<f32>>, usize) {
     let num_vtx = vtx2xy_in.shape()[0];
     let vtx2xy_in = vtx2xy_in.as_slice().unwrap();
     let mut loop2idx = vec![0, num_vtx];
@@ -39,6 +39,9 @@ pub fn tesselation2d<'a>(
             &loop2idx,
             &idx2vtx,
         );
+
+    let num_edge_vtx = vtx2xy.len();
+
     // ----------------------------------------
     if resolution_face > 1.0e-10 {
         let nvtx = vtx2xy.len();
@@ -72,5 +75,6 @@ pub fn tesselation2d<'a>(
         numpy::ndarray::Array2::from_shape_vec((vtx2xy_out.len() / 2, 2), vtx2xy_out)
             .unwrap()
             .into_pyarray_bound(py),
+        num_edge_vtx,
     )
 }
